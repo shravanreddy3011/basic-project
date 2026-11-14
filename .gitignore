@@ -1,0 +1,23 @@
+# Node dependencies
+node_modules/
+application/node_modules/
+
+# Environment Variables
+.env
+application/.env
+.env.*
+
+# Logs
+
+*.log
+npm-debug-log*
+
+# test reports
+coverage/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDC
+.vscode
