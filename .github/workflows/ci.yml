@@ -49,9 +49,35 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
+      - name: Verify database environment
+        run: |
+          node -e "
+            for (const key of ['DB_HOST', 'DB_PORT', 'DB_NAME', 'DB_USER', 'DB_PASSWORD']) {
+              console.log(key + ': ' + (process.env[key] ? 'SET' : 'MISSING'));
+            }
+          "
+
       - name: Initialize Database Schema
         run: |
-          node -e "const fs = require('fs'); const { Pool } = require('pg'); const pool = new Pool(); pool.query(fs.readFileSync('../database/init.sql', 'utf8')).then(() => console.log('Database schema initialized')).catch(err => { console.error(err); process.exitCode = 1; }).finally(() => pool.end());"
+          node -e "
+            const fs = require('fs');
+            const { Pool } = require('pg');
+
+          const pool = new Pool({
+            host: process.env.DB_HOST,
+            port: Number(process.env.DB_PORT),
+            database: process.env.DB_NAME,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD
+          });
+
+          pool.query(fs.readFileSync('../database/init.sql', 'utf8'))
+            .then(() => console.log('Database schema initialized'))
+            .catch(err => {
+              console.error(err);
+              process.exitCode = 1;
+            })
+            .finally(() => pool.end());"
       
       - name: run automated tests
         run: npm test
