@@ -85,9 +85,6 @@ jobs:
       - name: run automated tests
         run: npm test
 
-      - name: Build Docker Image
-        run: docker build -t employee-management-api:${{github.sha}} .
-
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -104,7 +101,7 @@ jobs:
           REPOSITORY: employee-management-api
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG ./application
+          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
           docker tag $REGISTRY/$REPOSITORY:$IMAGE_TAG $REGISTRY/$REPOSITORY:latest
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
           docker push $REGISTRY/$REPOSITORY:latest
