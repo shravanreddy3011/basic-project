@@ -95,27 +95,14 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Debug repository structure
-        run: |
-          echo "Current directory:"
-          pwd
-
-          echo "Repository files:"
-          ls -la
-
-          echo "Application directory:"
-          ls -la application || true
-
-          echo "Lambda Dockerfile:"
-          find . -name "Dockerfile.lambda"
-
       - name: Build, tag and push to Docker Image
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REPOSITORY: employee-management-api
           IMAGE_TAG: ${{ github.sha }}
+        working-directory: application
         run: |
-          docker build -f application/Dockerfile.lambda -t $REGISTRY/$REPOSITORY:$IMAGE_TAG -t $REGISTRY/$REPOSITORY:lambda-latest ./application
+          docker build -f Dockerfile.lambda -t $REGISTRY/$REPOSITORY:$IMAGE_TAG -t $REGISTRY/$REPOSITORY:lambda-latest .
           
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
           docker push $REGISTRY/$REPOSITORY:lambda-latest
