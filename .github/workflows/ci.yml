@@ -102,7 +102,14 @@ jobs:
           IMAGE_TAG: ${{ github.sha }}
         working-directory: application
         run: |
-          docker build -f Dockerfile.lambda -t $REGISTRY/$REPOSITORY:$IMAGE_TAG -t $REGISTRY/$REPOSITORY:lambda-latest .
+          docker build \
+            --platform linux/amd64 \
+            --provenance=false \
+            --sbom=false \
+            -f Dockerfile.lambda \
+            -t $REGISTRY/$REPOSITORY:$IMAGE_TAG \
+            -t $REGISTRY/$REPOSITORY:lambda-latest \
+            .
           
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
           docker push $REGISTRY/$REPOSITORY:lambda-latest
