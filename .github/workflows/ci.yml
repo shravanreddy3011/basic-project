@@ -110,7 +110,30 @@ jobs:
             -t $REGISTRY/$REPOSITORY:$IMAGE_TAG \
             -t $REGISTRY/$REPOSITORY:lambda-latest \
             .
-          
+      - name: Trivy vulnerability scan
+        uses: aquasecurity/trivy-action@v0.36.0    
+        with:
+          image-ref: ${{ steps.login-ecr.outputs.registry  }}/employee-management-api:${{ github.sha }}
+          format: table
+          output: trivy-report.txt
+          exit-code: '1'
+          vuln-type: os,library
+          severity: HIGH, CRITICAL
+      
+      - name: upload trivy report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-security-report
+          path: trivy-report.txt
+          retention-days: 30
+      - name: push docker image to ECR
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: employee-management-api
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
           docker push $REGISTRY/$REPOSITORY:lambda-latest
+         
         

@@ -21,3 +21,6 @@ Thumbs.db
 
 # IDC
 .vscode
+.terraform/
+*.tfstate
+*.tfstate.*
