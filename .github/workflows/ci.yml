@@ -117,8 +117,8 @@ jobs:
           format: table
           output: trivy-report.txt
           exit-code: '1'
-          vuln-type: os,library
-          severity: HIGH, CRITICAL
+          vuln-type: 'os,library'
+          severity: 'HIGH, CRITICAL'
       
       - name: upload trivy report
         if: always()
